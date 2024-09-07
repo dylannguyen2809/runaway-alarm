@@ -3,6 +3,8 @@
 #include <SevSeg.h>
 #include <Encoder.h>
 #include "pitches.h"
+#include <SPI.h>
+#include <RFID.h>
 
 RTC_DS1307 rtc;
 SevSeg sevseg; // Create an instance of the SevSeg object
@@ -10,6 +12,15 @@ Encoder encoder(32, 33); // Rotary encoder connected to pins 32 and 33
 const int buttonPin = 34; // Button connected to pin 34
 const int speakerPin = 40; // Speaker connected to pin 40
 const int tonePin = 40; // for midi function
+
+//RFID Sensor
+
+int SDA_DIO = 48;
+int RESET_DIO = 49;
+RFID RC522(SDA_DIO, RESET_DIO); 
+
+
+//
 
 
 //Motor Stuff
@@ -33,7 +44,7 @@ const long interval = 1000;        // Interval at which to read sensors and upda
 unsigned long blinkMillis = 0;     // Stores the last time the display was toggled
 const long blinkInterval = 500;    // Interval at which to blink the display (milliseconds)
 unsigned long alarmMillis = 0;     // Stores the time when the alarm started
-const long alarmDuration = 10000;  // Duration for which the alarm sound should play (milliseconds)
+const long alarmDuration = 30000;  // Duration for which the alarm sound should play (milliseconds)
 unsigned long lastButtonPress = 0; // Stores the last time the button was pressed
 const long debounceDelay = 150;     // Debounce delay for the button (milliseconds)
 
@@ -143,6 +154,11 @@ void setup() {
   Serial.println();
   Serial.println(__FILE__);
 
+    /* Enable the SPI interface */
+  SPI.begin(); 
+  /* Initialise the RFID reader */
+  RC522.init();
+
   // Initialize I2C communication
   Wire.begin();
   Serial.println("I2C bus initialized.");
@@ -162,7 +178,7 @@ void setup() {
   }
 
   alarmHour = rtc.now().hour();
-  alarmMinute = rtc.now().minute() + 1;
+  alarmMinute = rtc.now().minute() + 0;
 
   // Initialize the 7-segment display
   byte numDigits = 4;
@@ -217,6 +233,10 @@ void loop() {
       //noTone(speakerPin); // Stop the sound
       alarmOff = true; // Reset the alarm triggered flag
     }
+  }
+
+  if (RC522.isCard()) {
+      alarmOff = true; // Reset the alarm triggered flag
   }
 
   // Blink the display if setting the alarm
@@ -300,6 +320,8 @@ void loop() {
     if (random(10000) < 10) { //every once in a while, turn left
     turnLeft();
     turnedLeft = true;
+    turnDuration = 500 + random(1000);
+    Serial.println("Turning lefty");
     turnTime = currentMillis;
     } else if (!turnedLeft) {
       driveMotors();
@@ -320,6 +342,7 @@ void loop() {
     Serial.println("Turning off alarm");
     noTone(speakerPin); // Stop the sound
     alarmTriggered = false; // Reset the alarm triggered flag
+    alarmOff = true;
   }
 }
 

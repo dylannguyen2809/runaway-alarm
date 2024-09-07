@@ -17,12 +17,12 @@ const int motor1pin1 = 39;
 const int motor1pin2 = 41;
 const int motor2pin1 = 43;
 const int motor2pin2 = 45;
-const int motor1en = 47;
-const int motor2en = 49;
+const int motor1en = 44;
+const int motor2en = 46;
 
 bool turnedLeft = false; //flag for turning
 long turnTime = 0; //clock for time when turn is initiated
-long turnDuration = 1000; //time of turn in millis
+long turnDuration = 2000; //time of turn in millis
 
 
 //End of motor stuff
@@ -180,6 +180,17 @@ void setup() {
   // Initialize speaker pin
   pinMode(speakerPin, OUTPUT);
 
+  //Initialize motors
+  pinMode(motor1pin1, OUTPUT);
+  pinMode(motor1pin2, OUTPUT);
+  pinMode(motor2pin1,   OUTPUT);
+  pinMode(motor2pin2, OUTPUT);
+  pinMode(motor1en,   OUTPUT); 
+  pinMode(motor2en, OUTPUT);
+
+  analogWrite(motor1en, 150); //ENA   pin
+  analogWrite(motor2en, 150); //ENB pin
+
   // Test the speaker
   tone(speakerPin, 1000); // Play a 1000 Hz tone on the speaker
   delay(1000); // Wait for 1 second
@@ -321,18 +332,20 @@ void midi() {
             isPlaying = true;
         } else {
             if (midiCurrentMillis - midiPreviousMillis >= notes[noteIndex].duration) {
-                Serial.println("HEEEYYYYYYYYY");
+                // Serial.println("HEEEYYYYYYYYY");
                 noTone(tonePin);
                 midiPreviousMillis = midiCurrentMillis;
                 noteIndex++;
                 isPlaying = false;
             }
         }
+    } else {
+      noteIndex = 0;
     }
 }
 
 void driveMotors() {
-  Serial.println("Driving");
+  // Serial.println("Driving");
   digitalWrite(motor1pin1,   LOW);
   digitalWrite(motor1pin2, HIGH);
   digitalWrite(motor2pin1, HIGH);
@@ -341,7 +354,7 @@ void driveMotors() {
 
 void turnLeft() {
   Serial.println("Turning Left");
-  digitalWrite(motor1pin1,   HIGH);
+  digitalWrite(motor1pin1,   LOW);
   digitalWrite(motor1pin2, LOW);
 
   digitalWrite(motor2pin1, LOW);
@@ -349,7 +362,7 @@ void turnLeft() {
 }
 
 void stopMotors() {
-  Serial.println("Stopping");
+  // Serial.println("Stopping");
   digitalWrite(motor1pin1, LOW);
   digitalWrite(motor1pin2, LOW);
   digitalWrite(motor2pin1, LOW);

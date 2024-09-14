@@ -10,8 +10,7 @@ RTC_DS1307 rtc;
 SevSeg sevseg; // Create an instance of the SevSeg object
 Encoder encoder(32, 33); // Rotary encoder connected to pins 32 and 33
 const int buttonPin = 34; // Button connected to pin 34
-const int speakerPin = 40; // Speaker connected to pin 40
-const int tonePin = 40; // for midi function
+const int speakerPin = 29; // Speaker connected to pin 40
 
 //RFID Sensor
 
@@ -178,11 +177,11 @@ void setup() {
   }
 
   alarmHour = rtc.now().hour();
-  alarmMinute = rtc.now().minute() + 0;
+  alarmMinute = rtc.now().minute() + 1;
 
   // Initialize the 7-segment display
   byte numDigits = 4;
-  byte digitPins[] = {2, 3, 4, 5};
+  byte digitPins[] = {22, 23, 24, 25};
   byte segmentPins[] = {6, 7, 8, 9, 10, 11, 12, 13};
   bool resistorsOnSegments = false; // 'false' means resistors are on digit pins
   bool updateWithDelays = true; // Default 'false' is recommended
@@ -203,6 +202,7 @@ void setup() {
   pinMode(motor2pin2, OUTPUT);
   pinMode(motor1en,   OUTPUT); 
   pinMode(motor2en, OUTPUT);
+  stopMotors();
 
   analogWrite(motor1en, 150); //ENA   pin
   analogWrite(motor2en, 150); //ENB pin
@@ -350,13 +350,13 @@ void midi() {
     unsigned long midiCurrentMillis = millis();
     if (noteIndex < sizeof(notes) / sizeof(notes[0])) {
         if (!isPlaying) {
-            tone(tonePin, notes[noteIndex].frequency, notes[noteIndex].duration);
+            tone(speakerPin, notes[noteIndex].frequency, notes[noteIndex].duration);
             midiPreviousMillis = midiCurrentMillis;
             isPlaying = true;
         } else {
             if (midiCurrentMillis - midiPreviousMillis >= notes[noteIndex].duration) {
                 // Serial.println("HEEEYYYYYYYYY");
-                noTone(tonePin);
+                noTone(speakerPin);
                 midiPreviousMillis = midiCurrentMillis;
                 noteIndex++;
                 isPlaying = false;

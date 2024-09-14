@@ -177,7 +177,9 @@ void setup() {
   }
 
   alarmHour = rtc.now().hour();
-  alarmMinute = rtc.now().minute() + 1;
+  // alarmMinute = rtc.now().minute() + 0;
+  // alarmMinute = rtc.now().minute() + 1;
+  alarmMinute = rtc.now().minute() + 5;
 
   // Initialize the 7-segment display
   byte numDigits = 4;
@@ -226,6 +228,8 @@ void loop() {
       // Confirm the alarm set time and switch back to clock mode
       settingAlarm = false;
       buttonPressCount = 0;
+    } else {
+      settingAlarm = true; // Start setting the alarm if the encoder is moved
     }
 
     // Stop the alarm if it is currently triggered
@@ -263,7 +267,6 @@ void loop() {
   // Read the rotary encoder
   long newPosition = encoder.read() / 4; // Adjust for encoder resolution
   if (newPosition != 0) {
-    settingAlarm = true; // Start setting the alarm if the encoder is moved
     if (buttonPressCount == 1) {
       alarmHour = (alarmHour + newPosition) % 24;
       if (alarmHour < 0) alarmHour += 24;

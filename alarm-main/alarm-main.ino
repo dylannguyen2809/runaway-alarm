@@ -41,7 +41,7 @@ uint32_t counter = 0;
 unsigned long previousMillis = 0;  // Stores the last time the loop was updated
 const long interval = 1000;        // Interval at which to read sensors and update time (milliseconds)
 unsigned long blinkMillis = 0;     // Stores the last time the display was toggled
-const long blinkInterval = 500;    // Interval at which to blink the display (milliseconds)
+const long blinkInterval = 400;    // Interval at which to blink the display (milliseconds)
 unsigned long alarmMillis = 0;     // Stores the time when the alarm started
 const long alarmDuration = 30000;  // Duration for which the alarm sound should play (milliseconds)
 unsigned long lastButtonPress = 0; // Stores the last time the button was pressed
@@ -190,7 +190,7 @@ void setup() {
   bool leadingZeros = true; // Use 'true' if you want leading zeros
 
   sevseg.begin(COMMON_CATHODE, numDigits, digitPins, segmentPins, resistorsOnSegments, updateWithDelays, leadingZeros);
-  sevseg.setBrightness(80); // Adjust brightness as needed
+  sevseg.setBrightness(50); // Adjust brightness as needed
 
   // Initialize button pin
   pinMode(buttonPin, INPUT_PULLUP);
@@ -217,9 +217,9 @@ void setup() {
 
 
 void loop() {
-
+  sevseg.refreshDisplay(); // Must be called repeatedly
   unsigned long currentMillis = millis();
-
+  
   // Check if the button is pressed
   if (digitalRead(buttonPin) == LOW && (currentMillis - lastButtonPress > debounceDelay)) {
     lastButtonPress = currentMillis;
@@ -238,6 +238,7 @@ void loop() {
       alarmOff = true; // Reset the alarm triggered flag
     }
   }
+  
 
   if (RC522.isCard()) {
       alarmOff = true; // Reset the alarm triggered flag
@@ -255,13 +256,11 @@ void loop() {
     } else {
       sevseg.blank(); // Turn off display
     }
-    sevseg.refreshDisplay(); // Must be called repeatedly
   } else {
     // Display the current time on the 7-segment display
     DateTime now = rtc.now();
     int displayCurrentTime = (now.hour() * 100) + now.minute(); // Format HHMM
     sevseg.setNumber(displayCurrentTime, 2); // 2 decimal places for HH:MM
-    sevseg.refreshDisplay(); // Must be called repeatedly
   }
 
   // Read the rotary encoder
@@ -336,9 +335,6 @@ void loop() {
   if (turnedLeft and currentMillis - turnTime > turnDuration) {
     turnedLeft = false;
   }
-
-
-  
 
   // Stop the alarm sound after the specified duration
   if (!alarmOff && currentMillis - alarmMillis >= alarmDuration) {

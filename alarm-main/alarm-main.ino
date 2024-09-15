@@ -177,9 +177,9 @@ void setup() {
   }
 
   alarmHour = rtc.now().hour();
-  // alarmMinute = rtc.now().minute() + 0;
+  alarmMinute = rtc.now().minute() + 0;
   // alarmMinute = rtc.now().minute() + 1;
-  alarmMinute = rtc.now().minute() + 5;
+  // alarmMinute = rtc.now().minute() + 5;
 
   // Initialize the 7-segment display
   byte numDigits = 4;
@@ -319,11 +319,11 @@ void loop() {
   //WITHOUT THE INTERVAL
   if (!alarmOff) {
     midi();
-    if (random(10000) < 10) { //every once in a while, turn left
+    if (random(10000) < 30) { //every once in a while, turn left
     turnLeft();
     turnedLeft = true;
-    turnDuration = 500 + random(1000);
-    Serial.println("Turning lefty");
+    turnDuration = 750 + random(1000);
+    Serial.println("Turning left");
     turnTime = currentMillis;
     } else if (!turnedLeft) {
       driveMotors();
@@ -332,7 +332,7 @@ void loop() {
     stopMotors();
   }
 
-  if (turnedLeft and currentMillis - turnTime > turnDuration) {
+  if (turnedLeft && currentMillis - turnTime > turnDuration) {
     turnedLeft = false;
   }
 
@@ -368,10 +368,10 @@ void midi() {
 
 void driveMotors() {
   // Serial.println("Driving");
-  digitalWrite(motor1pin1,   LOW);
-  digitalWrite(motor1pin2, HIGH);
-  digitalWrite(motor2pin1, HIGH);
-  digitalWrite(motor2pin2, LOW);
+  digitalWrite(motor1pin1,   HIGH);
+  digitalWrite(motor1pin2, LOW);
+  digitalWrite(motor2pin1, LOW);
+  digitalWrite(motor2pin2, HIGH);
 }
 
 void turnLeft() {
@@ -379,8 +379,8 @@ void turnLeft() {
   digitalWrite(motor1pin1,   LOW);
   digitalWrite(motor1pin2, LOW);
 
-  digitalWrite(motor2pin1, LOW);
-  digitalWrite(motor2pin2, HIGH);
+  digitalWrite(motor2pin1, HIGH);
+  digitalWrite(motor2pin2, LOW);
 }
 
 void stopMotors() {
@@ -390,3 +390,42 @@ void stopMotors() {
   digitalWrite(motor2pin1, LOW);
   digitalWrite(motor2pin2, LOW);
 }
+
+// void displayNum(int digitPin, int num) {
+
+//   for (int i = 0; i < 4; i++) {
+//     if (digitPins[i] = digitPin) {
+//       digitalWrite(digitPins[i], HIGH);
+//     } else {
+//       digitalWrite(digitPins[i], LOW);
+//     }
+//   }
+//   if (digitPin = digitPins[1]) {
+//     digitalWrite(segmentPins[7], HIGH);
+//   }
+
+//   int code = 0;
+//   switch(num) {
+//     case 0:
+//       code = 0b00111111;
+//       digitalWrite(segmentPins[0], HIGH); // a
+//       digitalWrite(segmentPins[1], HIGH); // b
+//       digitalWrite(segmentPins[2], HIGH); // c
+//       digitalWrite(segmentPins[3], HIGH); // d
+//       digitalWrite(segmentPins[4], HIGH); // e
+//       digitalWrite(segmentPins[5], HIGH); // f
+//       digitalWrite(segmentPins[6], HIGH); // g
+
+//     break;
+//     case 1:
+
+//     break;
+//   }
+
+//   for (int i = 0; i < 8; i++) {
+//     int out = (0b00000001 && code) ? HIGH : LOW;
+//     digitalWrite(segmentPins[i], out);
+//   }
+// }
+
+

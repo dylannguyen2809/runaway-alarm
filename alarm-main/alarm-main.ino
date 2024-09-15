@@ -177,9 +177,9 @@ void setup() {
   }
 
   alarmHour = rtc.now().hour();
-  alarmMinute = rtc.now().minute() + 0;
+  // alarmMinute = rtc.now().minute() + 0;    //for debugging purposes we enabled the alarm to sound at different times
   // alarmMinute = rtc.now().minute() + 1;
-  // alarmMinute = rtc.now().minute() + 5;
+  alarmMinute = rtc.now().minute() + 2;
 
   // Initialize the 7-segment display
   byte numDigits = 4;
@@ -323,7 +323,6 @@ void loop() {
     turnLeft();
     turnedLeft = true;
     turnDuration = 750 + random(1000);
-    Serial.println("Turning left");
     turnTime = currentMillis;
     } else if (!turnedLeft) {
       driveMotors();
@@ -376,7 +375,7 @@ void driveMotors() {
 
 void turnLeft() {
   Serial.println("Turning Left");
-  digitalWrite(motor1pin1,   LOW);
+  digitalWrite(motor1pin1,   HIGH);
   digitalWrite(motor1pin2, LOW);
 
   digitalWrite(motor2pin1, HIGH);
